@@ -1,6 +1,7 @@
-#pragma once
+ï»¿#pragma once
 #include "Elem_list.h"
 #include <iostream>
+#include <algorithm>
 
 class list {
 
@@ -17,8 +18,22 @@ public:
 	}
 
 	list(const list &lt) {
-		N = lt.N;
-		head = nullptr;
+		N = 0;
+		if (lt.N == 0) {
+			head = nullptr;
+			return;
+		}
+		elem* cur = lt.head;
+		head = new elem(cur->data, cur->count);
+		N++;
+		if (lt.N == 1) {
+			return;
+		}
+		cur = cur->next;
+		while (cur != nullptr) {
+			add(cur->data, cur->count);
+			cur = cur->next;
+		}
 	}
 
 	~list() {
@@ -41,8 +56,22 @@ public:
 		}
 	}
 
-	//Äîáàâëÿåò ýëåìåíò â ñïèñîê;
-	//0 - ýëåìåíò äîáàâëåí
+	//Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¼Ð¾Ñ‰Ð½Ð¾ÑÑ‚ÑŒ Ð¼Ð½-Ð²Ð°;
+	int getPower() {
+		int power = 0;
+		if (N == 0) {
+			return power;
+		}
+		elem* cur = head;
+		while (cur != nullptr) {
+			power += cur->count;
+			cur = cur->next;
+		}
+		return power;
+	}
+
+	//Ã„Ã®Ã¡Ã Ã¢Ã«Ã¿Ã¥Ã² Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã¢ Ã±Ã¯Ã¨Ã±Ã®Ãª;
+	//0 - Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã¤Ã®Ã¡Ã Ã¢Ã«Ã¥Ã­
 	int add(int data, int count) {
 		if (N == 0) {
 			head = new elem(data, count);
@@ -51,7 +80,7 @@ public:
 		}
 		else {
 			elem* cur = head;
-			if (cur->data > data) {                  //Äîáàâëåíèå â íà÷àëî ñïèñêà
+			if (cur->data > data) {                  //Ã„Ã®Ã¡Ã Ã¢Ã«Ã¥Ã­Ã¨Ã¥ Ã¢ Ã­Ã Ã·Ã Ã«Ã® Ã±Ã¯Ã¨Ã±ÃªÃ 
 				cur->prev = new elem(data, count);
 				cur->prev->next = cur;
 				head = cur->prev;
@@ -64,7 +93,7 @@ public:
 				return 0;
 			}
 
-			//Äîáàâëåíèå ñî 2-ãî äî n-1;
+			//Ã„Ã®Ã¡Ã Ã¢Ã«Ã¥Ã­Ã¨Ã¥ Ã±Ã® 2-Ã£Ã® Ã¤Ã® n-1;
 			while (cur->next != nullptr) {
 				cur = cur->next;
 				if (cur->data == data) {
@@ -82,7 +111,7 @@ public:
 				}
 			} 
 
-			//Äîáàâëåíèå â êîíåö
+			//Ã„Ã®Ã¡Ã Ã¢Ã«Ã¥Ã­Ã¨Ã¥ Ã¢ ÃªÃ®Ã­Ã¥Ã¶
 			cur->next = new elem(data, count);
 			cur->next->prev = cur;
 			N++;
@@ -90,16 +119,16 @@ public:
 		}
 	}
 
-	//Óäàëÿåò ýëåìåíò èç ñïèñêà;
-	//0 - ýëåìåíò óäàëåí
-	//1 - ýëåìåíò íå íàéäåí
+	//Ã“Ã¤Ã Ã«Ã¿Ã¥Ã² Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã¨Ã§ Ã±Ã¯Ã¨Ã±ÃªÃ ;
+	//0 - Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã³Ã¤Ã Ã«Ã¥Ã­
+	//1 - Ã½Ã«Ã¥Ã¬Ã¥Ã­Ã² Ã­Ã¥ Ã­Ã Ã©Ã¤Ã¥Ã­
 	int erase(int data, int count) {
 		if (N == 0) {
 			return 1;
 		}
 		else {
 			elem* cur = head;
-			//Óäàëåíèå ïåðâîãî
+			//Ã“Ã¤Ã Ã«Ã¥Ã­Ã¨Ã¥ Ã¯Ã¥Ã°Ã¢Ã®Ã£Ã®
 			if (cur->data == data) {
 				cur->count -= count;
 				if (cur->count <= 0) {
@@ -118,7 +147,7 @@ public:
 				return 0;
 			}
 
-			//Óäàëåíèå ñî 2-ãî äî n-1
+			//Ã“Ã¤Ã Ã«Ã¥Ã­Ã¨Ã¥ Ã±Ã® 2-Ã£Ã® Ã¤Ã® n-1
 			while (cur->next != nullptr) {
 				if (cur->data == data) {
 					cur->count -= count;
@@ -142,12 +171,13 @@ public:
 				}
 				return 0;
 			}
+			return 1;
 		}
 	}
 
 
 
-	void listPrint() {
+	void print() {
 		elem* cur = head;
 		if (N != 0) {
 			while (cur != nullptr) {
@@ -160,4 +190,180 @@ public:
 		}
 	}
 
+	int subset(list b) {
+		elem* curA = head;
+		elem* curB = b.head;
+		while (curA != nullptr) {
+			if (curA->data == curB->data) {
+				break;
+			}
+			curA = curA->next;
+		}
+		while ((curB != nullptr) && (curA != nullptr)) {
+			if ((curA->data == curB->data) && (curA->count >= curB->count)) {
+				curA = curA->next;
+				curB = curB->next;
+			}
+			else {
+				return 1;
+			}
+		}
+		if (curB == nullptr) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+	}
+
+	list& operator=(const list& lt) {
+		if (&lt != this)
+		{
+			this->~list();
+			new (this) list(lt);
+		}
+		return *this;
+	}
+
+	//ÐžÐ±ÑŠÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ
+	list operator+(const list& b) {
+		if ((this->head == nullptr) && (b.head == nullptr)) {
+			return list();
+		}
+		if (this->head == nullptr) {
+			return list(b);
+		}
+		if (b.head == nullptr) {
+			return list(*this);
+		}
+		list result = list(*this);
+
+		elem* curRes = result.head;
+		elem* curB = b.head;
+
+		if (curRes->data > curB->data) {
+			curRes->prev = new elem(curB->data, curB->count);
+			curRes->prev->next = curRes;
+			result.head = curRes->prev;
+			curB = curB->next;
+			result.N++;
+			if (curB == nullptr) {
+				return result;
+			}
+		}
+
+		elem* prev = curRes;
+
+		if (curRes->data == curB->data) {
+			curRes->count = std::max(curRes->count, curB->count);
+			curRes = curRes->next;
+			curB = curB->next;
+			if (curB == nullptr) {
+				return result;
+			}
+		}
+
+		while (curRes != nullptr)
+		{
+			while (curRes->data > curB->data) {
+				elem* newEl = new elem(curB->data, curB->count);
+				newEl->next = curRes;
+				newEl->prev = curRes->prev;
+				curRes->prev->next = newEl;
+				curRes->prev = newEl;
+				result.N++;
+				curB = curB->next;
+				if (curB == nullptr) {
+					return result;
+				}
+			}
+			if (curRes->data == curB->data) {
+				curRes->count = std::max(curRes->count, curB->count);
+				curB = curB->next;
+				if (curB == nullptr) {
+					return result;
+				}
+			}
+			prev = curRes;
+			curRes = curRes->next;
+		}
+		curRes = prev;
+		
+		while (curB != nullptr) {
+			curRes->next = new elem(curB->data, curB->count);
+			curRes->next->prev = curRes;
+			result.N++;
+			curRes = curRes->next;
+			curB = curB->next;
+		}
+		return result;
+	}
+
+	//ÐŸÐµÑ€ÐµÑÐµÑ‡ÐµÐ½Ð¸Ðµ Ð¼Ð½-Ð²
+	list operator*(const list& b) {
+
+		if ((this->head == nullptr) || (b.head == nullptr)) {
+			return list();
+		}
+		list result = list();
+
+		elem* curA = this->head;
+		elem* curB = b.head;
+
+		while (curA != nullptr) {
+			while (curA->data > curB->data) {
+				curB = curB->next;
+				if (curB == nullptr) {
+					return result;
+				}
+			}
+			if (curA->data == curB->data) {
+				result.add(curA->data, std::min(curA->count, curB->count));
+			}
+			curA = curA->next;
+		}
+		return result;
+	}
+
+	//Ñ€Ð°Ð·Ð½Ð¾ÑÑ‚ÑŒ Ð¼Ð½-Ð²
+	list operator-(const list& b) {
+		if (this->head == nullptr) {
+			return list();
+		}
+		if (b.head == nullptr) {
+			return list(*this);
+		}
+		list result = list(*this);
+		
+		elem* curA = this->head;
+		elem* curB = b.head;
+
+		while (curA != nullptr) {
+			while (curA->data > curB->data) {
+				curB = curB->next;
+				if (curB == nullptr) {
+					return result;
+				}
+			}
+			if (curA->data == curB->data) {
+				result.erase(curB->data, curB->count);
+			}
+			curA = curA->next;
+		}
+		return result;
+	}
+
+	friend std::ostream& operator <<(std::ostream& os, const list& lt) {
+		elem* cur = lt.head;
+		if (lt.N != 0) {
+			while (cur != nullptr) {
+				os << "(" << cur->data << ";" << cur->count << ")";
+				cur = cur->next;
+			}
+		}
+		else {
+			os << "List empty!";
+		}
+		return os << '\n';
+	}
 };
