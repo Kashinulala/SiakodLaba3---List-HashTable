@@ -1,30 +1,70 @@
 ﻿
 #include <iostream>
-#include "List.h"
+#include "HashTable.h"
 using namespace std;
 
 
 int main()
 {
-    list A = list();
-    list B = list();
-    list C = list();
-    for (int i = 1; i < 5; i+= 1) {
-        A.add(i, 6-i);
-    }
-    for (int i = 1; i < 7; i+= 1) {
-        B.add(i, 8-i);
+    /*
+    cout << A.add(-3, 1);
+    cout << A.add(3, 1);
+    for (int i = 4; i < 10; i++) {
+        cout << A.add(i, 1);
     }
 
-    A.add(10, 1);
-    A.print();
-    cout << "\n\n";
-    cout << A;
-    //B.print();
-    //cout << "\n\n";
-    //cout << B.subset(A);
-    //cout << "\n\n";
-    //C = B - A;
-    //cout << "\n\n";
-   // C.print();
+    cout << '\n' << A << '\n';
+
+    cout << A.add(-6, 1);
+    cout << A.add(12, 1);
+    A + elem(15, 1);
+
+    cout << '\n' << A << '\n';
+
+    cout << A.del(15, 1);
+    cout << A.del(-6, 1);
+    cout << A.del(12, 1);
+    cout << A.del(9, 1);
+    cout << A.del(6, 1);
+
+    cout << '\n' << A << '\n';
+
+    cout << A.del(3, 1);
+
+    cout << '\n' << A << '\n';
+
+    cout << A.del(7, 1);
+
+    cout << '\n' << A;
+    */
+   
+
+    hashTable A = hashTable(3);
+    list B = list();
+    for (int i = 0; i < 20; i++) {
+        B = B + elem(i, 2);
+    }
+
+    cout << B << '\n';
+    A = A + B;
+    hashTable C = hashTable(3);
+    cout << A << '\n';
+    list D = list();
+    for (int i = 0; i < 20; i++) {
+        D = D + elem(i, 1);
+    }
+    C = C + D;
+    C - elem(19, 1);
+    
+    C = C * A;
+    cout << C << '\n';
+
+    cout << C << '\n';
+
+    cout << A.getPower() << '\n';
+    cout << C.getPower() << '\n';
+    C + elem(100, 1);
+
+    cout << A.subset(C);
+
 }

@@ -21,7 +21,12 @@ struct elem {
 
 	elem(int _data, int _count) {
 		data = _data;
-		count = _count;
+		if (_count > 0) {
+			count = _count;
+		}
+		else {
+			count = 1;
+		}
 		next = prev = nullptr;
 	}
 };

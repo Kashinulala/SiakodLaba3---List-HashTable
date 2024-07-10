@@ -56,6 +56,14 @@ public:
 		}
 	}
 
+	elem* getHead() const {
+		return head;
+	}
+
+	int getSize() const{
+		return N;
+	}
+
 	//Возвращает мощность мн-ва;
 	int getPower() {
 		int power = 0;
@@ -70,8 +78,10 @@ public:
 		return power;
 	}
 
-	//Äîáàâëÿåò ýëåìåíò â ñïèñîê;
-	//0 - ýëåìåíò äîáàâëåí
+	//Добавляет элемент
+	//count - кол-во добавляемых элементов
+	//1 - изменен счетчик
+	//0 - элемент добавлен
 	int add(int data, int count) {
 		if (N == 0) {
 			head = new elem(data, count);
@@ -89,16 +99,16 @@ public:
 			}
 
 			if (cur->data == data) {
-				cur->count += count;
-				return 0;
+				cur->count = std::max(count, cur->count);
+				return 1;
 			}
 
 			//Äîáàâëåíèå ñî 2-ãî äî n-1;
 			while (cur->next != nullptr) {
 				cur = cur->next;
 				if (cur->data == data) {
-					cur->count += count;
-					return 0;
+					cur->count = std::max(count, cur->count);
+					return 1;
 				}
 				if (cur->data > data) {
 					elem* newEl = new elem(data, count);
@@ -119,12 +129,12 @@ public:
 		}
 	}
 
-	//Óäàëÿåò ýëåìåíò èç ñïèñêà;
-	//0 - ýëåìåíò óäàëåí
-	//1 - ýëåìåíò íå íàéäåí
+	//-1 элемент не найден
+	//0 элемент удален
+	//1 уменьшен счетчик
 	int erase(int data, int count) {
 		if (N == 0) {
-			return 1;
+			return -1;
 		}
 		else {
 			elem* cur = head;
@@ -143,8 +153,9 @@ public:
 						N--;
 						delete cur;
 					}
+					return 0;
 				}
-				return 0;
+				return 1;
 			}
 
 			//Óäàëåíèå ñî 2-ãî äî n-1
@@ -155,9 +166,10 @@ public:
 						cur->prev->next = cur->next;
 						cur->next->prev = cur->prev;
 						delete cur;
+						N--;
+						return 0;
 					}
-					N--;
-					return 0;
+					return 1;
 				}
 				cur = cur->next;
 			}
@@ -168,10 +180,11 @@ public:
 					cur->prev->next = nullptr;
 					delete cur;
 					N--;
+					return 0;
 				}
-				return 0;
+				return 1;
 			}
-			return 1;
+			return -1;
 		}
 	}
 
@@ -222,6 +235,11 @@ public:
 			this->~list();
 			new (this) list(lt);
 		}
+		return *this;
+	}
+
+	list operator+(const elem& b) {
+		add(b.data, b.count);
 		return *this;
 	}
 
@@ -299,6 +317,19 @@ public:
 		return result;
 	}
 
+	list operator*(const elem& b) {
+		elem* cur = this->head;
+		list result = list();
+		while (cur != nullptr) {
+			if (cur->data == b.data) {
+				result.add(cur->data, std::min(cur->count, b.count));
+				return result;
+			}
+			cur = cur->next;
+		}
+		return result;
+	}
+
 	//Пересечение мн-в
 	list operator*(const list& b) {
 
@@ -323,6 +354,11 @@ public:
 			curA = curA->next;
 		}
 		return result;
+	}
+
+	list operator-(const elem& b) {
+		erase(b.data, b.count);
+		return *this;
 	}
 
 	//разность мн-в
@@ -354,7 +390,7 @@ public:
 	}
 
 	friend std::ostream& operator <<(std::ostream& os, const list& lt) {
-		elem* cur = lt.head;
+		elem* cur = lt.getHead();
 		if (lt.N != 0) {
 			while (cur != nullptr) {
 				os << "(" << cur->data << ";" << cur->count << ")";
